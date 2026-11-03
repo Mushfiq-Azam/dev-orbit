@@ -8,4 +8,4 @@ const addTwo =(a:number,b:number) : number => {
     return a + b
 }
 
-console.log(addTwo(9, 8)) // Output: 17
+console.log(addTwo(9, 8)) // Output: 17`
