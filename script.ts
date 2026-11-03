@@ -1,2 +1,5 @@
 let myString : string = "Mushfiq"
-myString = 123434
+let myNumber : number = 42
+let myBoolean : boolean = true
+let mySymbol : symbol = Symbol("mySymbol")
+let myBigInt : bigint = 9007199254740991n
