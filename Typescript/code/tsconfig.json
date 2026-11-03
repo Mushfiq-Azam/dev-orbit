@@ -1,14 +1,14 @@
+
 {
-  
   "compilerOptions": {
-    //file layout
-    "rootDir": "./Typescript/src",
-    "outDir": "./Typescript/dist",
+    // File layout
+    "rootDir": "./src",
+    "outDir": "./dist",
 
     "module": "esnext",
     "target": "esnext",
     "types": [],
     "strict": true,
-    "skipLibCheck": true,
+    "skipLibCheck": true
   }
 }
