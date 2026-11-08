@@ -1,84 +1,131 @@
-# TypeScript Tutorial
+# TypeScript for Beginners
 
-> A hands-on walkthrough of the TypeScript concepts covered in this section.
-> Read a topic, then open [`code/src/script.ts`](./code/src/script.ts) and try the
-> exercises at the end.
+> A friendly, step-by-step guide to the TypeScript in this section.
+> No prior TypeScript needed — only a little JavaScript.
 
 ![JavaScript to TypeScript developer journey](./JavaScript_to_TypeScript_Developer_Journey.png)
 
 ---
 
+## What you will learn
+
+By the end of this tutorial you will be able to:
+
+- Explain what TypeScript is in plain English.
+- Add types to variables, functions, arrays, and objects.
+- Understand the error messages TypeScript gives you.
+- Know **why** each feature exists and **where** to use it.
+- Read and fix the example in [`code/src/script.ts`](./code/src/script.ts).
+
+---
+
+## How to use this tutorial
+
+1. Read one section at a time. Do not rush.
+2. Keep `code/src/script.ts` open next to you.
+3. Type the examples yourself — do not just copy them.
+4. When you see an error, read it slowly. Section 13 teaches you how.
+5. Finish with the exercises in Section 15.
+
+---
+
 ## Table of Contents
 
-1. [What is TypeScript and why does it matter?](#1-what-is-typescript-and-why-does-it-matter)
-2. [How this section is set up](#2-how-this-section-is-set-up)
-3. [Primitive types](#3-primitive-types)
-4. [Type inference vs. type annotations](#4-type-inference-vs-type-annotations)
-5. [Functions: parameters and return types](#5-functions-parameters-and-return-types)
-6. [Arrays and tuples](#6-arrays-and-tuples)
-7. [Optional, default, and rest parameters](#7-optional-default-and-rest-parameters)
-8. [Objects: inline types, type aliases, and interfaces](#8-objects-inline-types-type-aliases-and-interfaces)
-9. [Type alias vs. interface: which one?](#9-type-alias-vs-interface-which-one)
-10. [Excess property checks](#10-excess-property-checks)
-11. [Compile-time vs. runtime errors](#11-compile-time-vs-runtime-errors)
-12. [Where TypeScript is used in the real world](#12-where-typescript-is-used-in-the-real-world)
-13. [Common mistakes in this section (and fixes)](#13-common-mistakes-in-this-section-and-fixes)
-14. [Practice exercises](#14-practice-exercises)
-15. [Cheat sheet](#15-cheat-sheet)
-16. [Next steps](#16-next-steps)
+1. [The big idea: JavaScript with labels](#1-the-big-idea-javascript-with-labels)
+2. [Your first TypeScript program](#2-your-first-typescript-program)
+3. [Your first types: text, numbers, true/false](#3-your-first-types-text-numbers-truefalse)
+4. [Two ways to add a type](#4-two-ways-to-add-a-type)
+5. [Functions: what goes in, what comes out](#5-functions-what-goes-in-what-comes-out)
+6. [Lists and fixed pairs (arrays and tuples)](#6-lists-and-fixed-pairs-arrays-and-tuples)
+7. [Flexible parameters (optional, default, rest)](#7-flexible-parameters-optional-default-rest)
+8. [Describing objects](#8-describing-objects)
+9. [`type` vs `interface` in plain English](#9-type-vs-interface-in-plain-english)
+10. [Why TypeScript complains about extra fields](#10-why-typescript-complains-about-extra-fields)
+11. [Two kinds of errors](#11-two-kinds-of-errors)
+12. [Where you will use TypeScript](#12-where-you-will-use-typescript)
+13. [How to read TypeScript errors](#13-how-to-read-typescript-errors)
+14. [Mistakes in our example, explained](#14-mistakes-in-our-example-explained)
+15. [Practice exercises](#15-practice-exercises)
+16. [Cheat sheet](#16-cheat-sheet)
+17. [Beginner glossary](#17-beginner-glossary)
+18. [Next steps](#18-next-steps)
 
 ---
 
-## 1. What is TypeScript and why does it matter?
+## 1. The big idea: JavaScript with labels
 
-TypeScript is **JavaScript with a type system**. You write `.ts` files, the
-TypeScript compiler (`tsc`) checks them, and it outputs plain `.js` files that
-run anywhere JavaScript runs — browsers, Node.js, Deno, Bun, mobile, and edge
-functions.
+Imagine you have a box. In JavaScript, the box can hold **anything** — a
+number, a word, a list, or nothing at all. That freedom is nice, but it causes
+mistakes.
 
-**What we learn**
+```js
+// JavaScript
+function addTwo(a, b) {
+  return a + b;
+}
 
-- How to describe the shape of data with types.
-- How to catch mistakes before the code runs.
-- How to use the compiler as a safety net and a documentation tool.
+addTwo("9", 8); // "98"  ← not what we wanted!
+```
 
-**Why it is important**
+JavaScript happily joins the text `"9"` and the number `8` into the text
+`"98"`. No error. Just a wrong answer.
 
-| Benefit | What it means in practice |
+TypeScript adds **labels** to your boxes:
+
+```ts
+// TypeScript
+function addTwo(a: number, b: number): number {
+  return a + b;
+}
+
+addTwo("9", 8); // ❌ Error: "9" is not a number
+```
+
+That is the whole idea. TypeScript is **JavaScript plus labels** that help you
+catch mistakes before your code runs.
+
+### A useful way to picture it
+
+| JavaScript | TypeScript |
 | --- | --- |
-| Catch bugs early | A wrong argument, a typo, or a missing property is reported while you type — not in production. |
-| Safer refactoring | Rename a field and the compiler shows every place that breaks. |
-| Self-documenting code | `(user: User) => void` explains intent better than a comment. |
-| Better editor support | Autocomplete, jump-to-definition, and inline errors come from types. |
-| Team scalability | Large codebases stay understandable because contracts are explicit. |
+| A box with no label | A box labelled "numbers only" |
+| You find out it is wrong later | You find out immediately |
+| Runs everywhere | Compiles to JavaScript, then runs everywhere |
 
-**Where to use it**
+### Important: TypeScript is not a new language at runtime
 
-- Application code (React, Vue, Angular, Node APIs, CLI tools).
-- Shared libraries and SDKs, where types are part of the public API.
-- Any JavaScript project that has grown beyond a few files.
+The browser cannot run TypeScript directly. A tool called the **TypeScript
+compiler** (`tsc`) checks your `.ts` file and turns it into a normal `.js`
+file. The labels disappear. What runs in the browser is still plain
+JavaScript.
 
-> TypeScript does **not** change runtime behavior. It only adds a checking step
-> before your JavaScript runs. Types disappear after compilation.
+```text
+script.ts  ──(tsc checks + converts)──►  script.js  ──►  browser / Node.js
+```
+
+**Why this matters:** TypeScript helps you while you write code. It does not
+make your program faster or change how it behaves.
 
 ---
 
-## 2. How this section is set up
+## 2. Your first TypeScript program
 
 The example project lives in [`code/`](./code):
 
 ```text
 Typescript/
 └── code/
-    ├── index.html          # loads dist/script.js in the browser
-    ├── tsconfig.json       # compiler configuration
+    ├── index.html          ← opens in the browser
+    ├── tsconfig.json       ← settings for the compiler
     ├── src/
-    │   └── script.ts       # the TypeScript we write
+    │   └── script.ts       ← you write TypeScript here
     └── dist/
-        └── script.js       # the JavaScript tsc generates
+        └── script.js       ← tsc creates this for you
 ```
 
-`tsconfig.json`:
+### The settings file
+
+`tsconfig.json` tells the compiler where your code is and how strict to be:
 
 ```json
 {
@@ -94,32 +141,34 @@ Typescript/
 }
 ```
 
-| Option | Purpose |
-| --- | --- |
-| `rootDir` | Where the TypeScript source lives. |
-| `outDir` | Where compiled JavaScript is written. |
-| `module` / `target` | Output module format and JavaScript version. |
-| `strict` | Turns on the strongest type checks. **Keep this on.** |
-| `skipLibCheck` | Skips type-checking third-party `.d.ts` files to speed up builds. |
-| `types` | `[]` prevents automatic loading of global `@types` packages. |
+In plain English:
 
-**Build loop**
+| Setting | Plain meaning |
+| --- | --- |
+| `rootDir` | "My TypeScript files are in `src`." |
+| `outDir` | "Put the finished JavaScript in `dist`." |
+| `module` / `target` | "Use modern JavaScript output." |
+| `strict` | "Check everything carefully. Keep this on." |
+| `skipLibCheck` | "Do not waste time checking other people's type files." |
+| `types` | "Do not load extra global type packages automatically." |
+
+### The two commands you need
 
 ```bash
 cd Typescript/code
-npx tsc          # compile once: src/script.ts -> dist/script.js
-npx tsc --watch  # recompile on every save
+
+npx tsc          # check once and create dist/script.js
+npx tsc --watch  # check again every time you save a file
 ```
 
-Open `index.html` in a browser to run `dist/script.js`.
+Then open `index.html` in your browser to run the result.
 
-**Why this matters:** understanding the source → compile → output pipeline is
-the foundation for every TypeScript project. Frameworks hide this step, but it
-is always happening underneath.
+> **Tip:** Use `--watch` while learning. You save the file and immediately see
+> whether TypeScript is happy or not.
 
 ---
 
-## 3. Primitive types
+## 3. Your first types: text, numbers, true/false
 
 From `script.ts`:
 
@@ -127,80 +176,115 @@ From `script.ts`:
 let myString: string = "Mushfiq";
 let myNumber: number = 42;
 let myBoolean: boolean = true;
-let mySymbol: symbol = Symbol("mySymbol");
-let myBigInt: bigint = 9007199254740991n;
 ```
 
-**What we learn**
+Read each line like this:
 
-TypeScript's core primitive types:
+```text
+let  myString  :  string   =   "Mushfiq"
+     │            │             │
+     │            │             └── the actual value
+     │            └── the type (a label)
+     └── the variable name
+```
 
-| Type | Example | Use for |
+### The everyday types
+
+| Type | Plain meaning | Example |
 | --- | --- | --- |
-| `string` | `"hello"` | Text. |
-| `number` | `42`, `3.14` | All numbers — integers and floats. |
-| `boolean` | `true` / `false` | Flags and conditions. |
-| `symbol` | `Symbol("id")` | Unique identifiers, often as object keys. |
-| `bigint` | `9007199254740991n` | Integers larger than `Number.MAX_SAFE_INTEGER`. |
-| `null` | `null` | Intentional absence of a value. |
-| `undefined` | `undefined` | A value that has not been assigned. |
-| `any` | anything | Escape hatch — **avoid it**, it disables checking. |
-| `unknown` | anything | Safe alternative to `any`; must be narrowed before use. |
-| `never` | — | A value that can never occur (e.g. a function that always throws). |
-| `void` | — | A function that returns nothing. |
+| `string` | Text | `"hello"` |
+| `number` | Any number, whole or decimal | `42`, `3.14` |
+| `boolean` | Yes/no, on/off | `true`, `false` |
+| `null` | On purpose, "no value" | `null` |
+| `undefined` | Not given a value yet | `undefined` |
 
-**Why it is important**
+### The other types you will meet
 
-- `"42"` (string) and `42` (number) are different types; TypeScript stops you
-  from mixing them accidentally.
-- `bigint` prevents precision loss for very large integers.
-- `unknown` forces you to check a value before using it, which is much safer
-  than `any`.
+```ts
+let id: symbol = Symbol("id");          // a guaranteed-unique value
+let huge: bigint = 9007199254740991n;   // very large whole numbers
+```
 
-**Where to use it**
+Do not worry about `symbol` and `bigint` for now. You will rarely need them as
+a beginner.
 
-- Annotate **boundaries**: function parameters, return values, API payloads,
-  and exported values.
-- Let TypeScript infer types for obvious local variables (see the next section).
+There are also three special types worth knowing:
+
+```ts
+let anything: any;       // ❌ turns checking off — avoid it
+let safeUnknown: unknown; // ✅ must be checked before use
+function log(): void {}  // a function that returns nothing
+```
+
+### Why types are useful
+
+```ts
+let age: number = 30;
+age = "thirty"; // ❌ Error: "thirty" is text, not a number
+```
+
+TypeScript stops the mistake right where it happens. Without types, this bug
+could travel deep into your app and only appear much later.
+
+### Where to use types
+
+- **Always** on function parameters and return values.
+- **Always** on shared data shapes (users, products, orders).
+- **Sometimes** on simple local variables — see the next section.
 
 ---
 
-## 4. Type inference vs. type annotations
+## 4. Two ways to add a type
+
+You can **tell** TypeScript the type, or let it **guess**.
+
+### Telling it (annotation)
 
 ```ts
-let myString: string = "Mushfiq"; // explicit annotation
-let inferred = "Mushfiq";         // inferred as string
+let city: string = "Dhaka";
 ```
 
-**What we learn**
-
-- **Annotation** — you write the type: `const age: number = 30`.
-- **Inference** — TypeScript figures it out: `const age = 30`.
-
-**Why it is important**
-
-Annotations are documentation and guardrails, but too many of them add noise.
-Good TypeScript is a balance: annotate public contracts, infer local details.
+### Letting it guess (inference)
 
 ```ts
-// Prefer this
-const fullName = firstName + " " + lastName; // inferred: string
-
-// Over this
-const fullName: string = firstName + " " + lastName;
+let city = "Dhaka"; // TypeScript guesses: string
 ```
 
-**Where to use annotations**
+Both lines do the same thing. TypeScript is good at guessing when a value is
+right in front of it.
 
-- Function parameters and return types.
-- Object shapes shared across files.
-- Anything exported from a module.
-- When the inferred type is wider than you want (e.g. `let status = "idle"` is
-  `string`; use `let status: "idle" | "loading" = "idle"` to narrow it).
+```ts
+const price = 19.99;      // guessed: number
+const isOpen = true;      // guessed: boolean
+const tags = ["a", "b"];  // guessed: string[]
+```
+
+### The beginner rule
+
+> **Tell TypeScript the type at the edges. Let it guess in the middle.**
+
+- **Edges** = function inputs, function outputs, exported values, object
+  shapes.
+- **Middle** = short-lived local variables inside a function.
+
+```ts
+// Edge: be explicit
+function greet(name: string): string {
+  return `Hello, ${name}`;
+}
+
+// Middle: let TypeScript guess
+const message = greet("Mushfiq");
+```
+
+Too many labels make code noisy. Too few leave important contracts unclear.
 
 ---
 
-## 5. Functions: parameters and return types
+## 5. Functions: what goes in, what comes out
+
+Functions are where most beginner bugs happen. TypeScript lets you label the
+**inputs** and the **output**.
 
 ```ts
 const addTwo = (a: number, b: number): number => {
@@ -210,97 +294,134 @@ const addTwo = (a: number, b: number): number => {
 console.log(addTwo(9, 8)); // 17
 ```
 
-**What we learn**
+Read it like a sentence:
 
-- Every parameter can have a type.
-- The return type goes after the parameter list: `: number`.
-- Arrow functions and regular functions use the same type syntax.
-- If a function returns nothing, its type is `void`.
+```text
+addTwo takes a number and a number, and gives back a number.
+```
 
-**Why it is important**
-
-Functions are where most bugs happen: wrong argument count, wrong argument
-order, or a missing return value. Typed parameters and return types make those
-mistakes impossible to ignore.
+### What happens when you give the wrong thing
 
 ```ts
 addTwo("9", 8);
 // Error: Argument of type 'string' is not assignable to parameter of type 'number'.
+```
 
-const bad = (a: number, b: number): string => {
+Translation: *"You gave me text, but this spot needs a number."*
+
+### What happens when you return the wrong thing
+
+```ts
+const addTwo = (a: number, b: number): string => {
   return a + b;
 };
 // Error: Type 'number' is not assignable to type 'string'.
 ```
 
-**Where to use it**
+Translation: *"You promised to give back text, but you are giving back a
+number."*
 
-- Every exported or shared function.
-- Callbacks passed to array methods, event handlers, and APIs.
-- Any function whose return value other code depends on.
+### Functions that return nothing
 
-**Tip:** let TypeScript infer the return type for small, obvious functions, but
-annotate exported functions so their contract is explicit and stable.
+Use `void` when the function only does something and gives nothing back:
+
+```ts
+const sayHello = (name: string): void => {
+  console.log(`Hello, ${name}`);
+};
+```
+
+### Why this matters
+
+- You catch wrong arguments at the moment you write them.
+- The editor can autocomplete the correct inputs.
+- Other people can read the function and know how to use it.
+
+### Where to use it
+
+- Every function you export or share.
+- Callbacks: `items.map((item: string) => ...)`, event handlers, API calls.
+- Any function whose result other code depends on.
 
 ---
 
-## 6. Arrays and tuples
+## 6. Lists and fixed pairs (arrays and tuples)
 
-### Arrays
+### Arrays: a row of identical boxes
 
-```ts
-const arr: string[] = ["Mushfiq", "is", "a", "developer"];
-const numArr: number[] = [1, 2, 3, 4, 5];
-
-// Equivalent generic syntax
-const scores: Array<number> = [10, 20, 30];
-```
-
-An array type means **any number of values of one type**.
-
-### Tuples
+An array holds **any number** of values, all of the same type.
 
 ```ts
-const dataLatLong: readonly [number, number] = [40.7128, -74.006];
+const names: string[] = ["Mushfiq", "is", "a", "developer"];
+const scores: number[] = [10, 20, 30];
+
+// Same thing, different spelling:
+const scores2: Array<number> = [10, 20, 30];
 ```
 
-A tuple means **a fixed number of values with a specific type at each position**.
-Here it is a latitude/longitude pair: exactly two numbers, in that order.
+Read `string[]` as **"a list of strings."**
 
-**What we learn**
+```ts
+names.push("!");     // ✅ fine, still a string
+names.push(42);      // ❌ Error: 42 is not a string
+```
 
-- `string[]` / `Array<string>` — a list.
-- `[number, number]` — a fixed-length, position-typed value.
-- `readonly` — prevents mutation.
-- Named tuple members improve readability:
+### Tuples: a form with a fixed number of fields
+
+A tuple holds **an exact number** of values, with a specific type in each
+position.
+
+```ts
+const location: [number, number] = [40.7128, -74.006];
+```
+
+This is a latitude/longitude pair. It must always be **two numbers, in that
+order**.
+
+```ts
+const location: [number, number] = [40.7128];          // ❌ needs two
+const location: [number, number] = [40.7128, "west"];  // ❌ second is text
+```
+
+### `readonly`: "do not change this"
+
+```ts
+const location: readonly [number, number] = [40.7128, -74.006];
+
+location.push(100);
+// ❌ Error: Property 'push' does not exist on type 'readonly [number, number]'.
+```
+
+`readonly` removes the tools that change the value. Think of it as putting the
+tuple behind glass: you can look, but you cannot edit.
+
+> **Note:** a normal tuple (without `readonly`) still allows `push` in
+> TypeScript. That is a known limitation. Use `readonly` when you truly want to
+> block changes.
+
+### Named tuple fields (nice for readability)
 
 ```ts
 type UserAction = [name: string, age: number, isActive: boolean];
 ```
 
-**Why it is important**
+### When to use arrays vs tuples
 
-Arrays and tuples express different guarantees. A coordinate must always have
-two numbers; a list of tags can have any length. Using a tuple prevents
-`[40.7128]` or `[40.7128, -74.006, 100]` from slipping through.
-
-**Where to use it**
-
-- Arrays: collections, lists, query results, `map`/`filter` output.
-- Tuples: coordinates, key/value pairs, React's `useState` return value,
-  function arguments that must keep a strict order, and fixed records.
-
-**Note on the example:** `dataLatLong.push(100)` fails because the tuple is
-`readonly` — mutating methods like `push` are removed. A plain (non-readonly)
-tuple would still allow `push` with the correct element type; that is a known
-TypeScript limitation, not true runtime immutability. Use `readonly` when you
-want the compiler to block mutation.
+| Use an array when... | Use a tuple when... |
+| --- | --- |
+| The count can change | The count is fixed |
+| All items are the same type | Each position has its own type |
+| Examples: tags, users, results | Examples: coordinates, key/value pairs |
 
 ---
 
-## 7. Optional, default, and rest parameters
+## 7. Flexible parameters (optional, default, rest)
 
-### Optional parameters
+Sometimes a function should accept a value **only sometimes**.
+
+### Optional: "maybe it is there"
+
+Add `?` after the name:
 
 ```ts
 const concatNames = (firstName: string, lastName?: string) => {
@@ -314,34 +435,44 @@ concatNames("Mushfiq");          // "Mushfiq"
 concatNames("Mushfiq", "Azam");  // "Mushfiq Azam"
 ```
 
-The `?` marks a parameter as optional. Its type becomes `string | undefined`.
+Think: *"`lastName` may be missing, so check before using it."*
 
-### Default parameters
+An optional parameter's type is really `string | undefined` — it is either a
+string **or** nothing.
+
+### Default: "use this if I do not get one"
 
 ```ts
-const greetings = (greeting: string = "Hello", fullname: string): void => {
-  console.log(greeting + " " + fullname);
+const greet = (greeting: string = "Hello", fullname: string): void => {
+  console.log(`${greeting} ${fullname}`);
 };
 
-greetings("Hi", "Mushfiq");        // "Hi Mushfiq"
-greetings(undefined, "Mushfiq");   // "Hello Mushfiq"
+greet("Hi", "Mushfiq");       // "Hi Mushfiq"
+greet(undefined, "Mushfiq");  // "Hello Mushfiq"
 ```
 
-If the caller passes `undefined`, the default is used.
+If the caller passes `undefined`, the default kicks in.
 
-### Rest parameters
+> **Beginner gotcha:** putting a required parameter (`fullname`) after a
+> defaulted one (`greeting`) is allowed, but awkward — callers must write
+> `undefined` to use the default. Put required parameters first when you can.
+
+### Rest: "and the rest of them"
+
+Put `...` before a parameter to collect **any number** of arguments into an
+array:
 
 ```ts
 const sumNumbers = (...numbers: number[]): number => {
-  return numbers.reduce((acc, curr) => acc + curr, 0);
+  return numbers.reduce((total, n) => total + n, 0);
 };
 
 sumNumbers(1, 2, 3, 4, 5); // 15
 ```
 
-The `...` collects any number of arguments into an array.
+Think: *"Take as many numbers as I give you and put them in a list."*
 
-Rest parameters can also be typed as a tuple, which enforces order and count:
+You can also use a tuple when the order and count matter:
 
 ```ts
 const longUserAction = (
@@ -354,33 +485,25 @@ const longUserAction = (
 longUserAction("Mushfiq", 30, true); // "Mushfiq is 30"
 ```
 
-**What we learn**
+### Where to use these
 
-- Optional parameters use `?` and must come **after** required parameters.
-- Default parameters provide a fallback value.
-- Rest parameters collect remaining arguments into an array or tuple.
-
-**Why it is important**
-
-Real functions often have flexible input. These features let you model that
-flexibility precisely instead of accepting `any` or writing runtime checks
-everywhere.
-
-**Where to use it**
-
-- Optional config objects and flags.
-- Default settings (timeouts, labels, locales).
-- Utility functions like `sum`, `log`, and wrappers that forward arguments.
-
-**Gotcha:** a required parameter after a defaulted one is legal but awkward —
-callers must pass `undefined` to reach the default. Prefer putting required
-parameters first, or use an options object.
+| Feature | Common use |
+| --- | --- |
+| Optional | A setting the caller may skip |
+| Default | A sensible fallback (timeout, language, label) |
+| Rest | `sum(...)`, `log(...)`, wrapping another function |
 
 ---
 
-## 8. Objects: inline types, type aliases, and interfaces
+## 8. Describing objects
 
-### Inline object type
+An object is a collection of named values. A **type** describes which names
+must exist and what kind of value each one holds.
+
+Think of it as a **form**: every field must be filled in, and each field
+accepts only a certain kind of answer.
+
+### Option 1: write the shape inline
 
 ```ts
 const user: {
@@ -398,22 +521,33 @@ const user: {
 };
 ```
 
-### Type alias
+This works, but repeating that big block everywhere is painful. That is why we
+give the shape a name.
+
+### Option 2: a type alias
 
 ```ts
-type TUser = {
+type User = {
   name: string;
   age: number;
   isActive: boolean;
   action: () => void;
   badges: string[];
 };
+
+const user: User = {
+  name: "Mushfiq",
+  age: 30,
+  isActive: true,
+  action: () => console.log("Hello"),
+  badges: ["admin", "editor"],
+};
 ```
 
-### Interface
+### Option 3: an interface
 
 ```ts
-interface IUser {
+interface User {
   name: string;
   age: number;
   isActive: boolean;
@@ -422,55 +556,58 @@ interface IUser {
 }
 ```
 
-**What we learn**
+`type User = { ... }` and `interface User { ... }` describe the same shape
+here. Section 9 explains which one to choose.
 
-- Object types describe the **shape** of an object: which properties exist and
-  what type each one has.
-- `type` and `interface` both create reusable names for that shape.
-- Function properties are typed with a function signature: `() => void`.
-- Array properties use `string[]`.
+### Reading the field types
 
-**Why it is important**
+| Field | Meaning |
+| --- | --- |
+| `name: string` | A piece of text |
+| `age: number` | A number |
+| `isActive: boolean` | True or false |
+| `action: () => void` | A function that returns nothing |
+| `badges: string[]` | A list of strings |
 
-Objects are the main data structure in JavaScript applications. Describing them
-turns implicit assumptions into checked contracts, gives you autocomplete, and
-prevents typos and missing fields.
+### Optional object fields
 
-**Where to use it**
+Add `?` to a field name to make it optional:
 
-- API request/response bodies.
-- Component props and state.
-- Database models and domain entities.
-- Configuration objects and function options.
+```ts
+type Product = {
+  id: string;
+  name: string;
+  description?: string; // may be missing
+};
+```
+
+### Where to use objects types
+
+- API data (users, products, orders).
+- Component props in React or Vue.
+- Database records.
+- Configuration and function options.
 
 ---
 
-## 9. Type alias vs. interface: which one?
+## 9. `type` vs `interface` in plain English
 
-Both can describe an object:
+Both create a reusable name for a shape. Here is the simple difference:
+
+> **`type`** = a nickname for **anything**.
+> **`interface`** = a blueprint for an **object**.
+
+### Use `type` for non-objects
 
 ```ts
-type Point = { x: number; y: number };
-interface PointI { x: number; y: number }
+type Username = string;                       // a nickname for a string
+type Status = "idle" | "loading" | "error";   // one of these exact values
+type Pair = [number, number];                 // a tuple
 ```
 
-Use this rule of thumb:
-
-| Use `type` when | Use `interface` when |
-| --- | --- |
-| Naming a primitive: `type UserId = string` | Defining an object shape others will extend |
-| Creating a union: `type Status = "idle" \| "loading" \| "error"` | Building a public API or library contract |
-| Combining types: `type Admin = User & { role: "admin" }` | Using declaration merging or `extends` |
-| Naming tuples, functions, or mapped types | You want clear, extendable object contracts |
+### Use `interface` for objects you may extend
 
 ```ts
-// type alias for a primitive
-type Username = string;
-
-// type alias for a union
-type Status = "idle" | "loading" | "success" | "error";
-
-// interface inheritance
 interface Person {
   name: string;
 }
@@ -480,230 +617,462 @@ interface Employee extends Person {
 }
 ```
 
-**Why it is important**
+An `Employee` now has both `name` and `employeeId`.
 
-Choosing consistently keeps a codebase predictable. `interface` communicates
-"this is an object contract"; `type` communicates "this is an alias for
-something, possibly not an object."
+### A simple decision guide
 
-**Where to use it**
+| Question | Answer |
+| --- | --- |
+| Am I naming a primitive, a union, or a tuple? | Use `type` |
+| Am I describing an object? | Either works |
+| Will someone extend this object later? | Prefer `interface` |
+| Am I combining types? | Use `type` with `&` |
 
-- `type` for unions, primitives, tuples, and composed utility types.
-- `interface` for object shapes, especially public ones and those meant to be
-  extended.
+```ts
+type Admin = Person & { role: "admin" };
+```
 
-> In most day-to-day code either works. What matters is consistency within the
-> project.
+> **Do not overthink this.** In most beginner code either choice is fine. Pick
+> one style and stay consistent.
 
 ---
 
-## 10. Excess property checks
+## 10. Why TypeScript complains about extra fields
 
 At the end of `script.ts`:
 
 ```ts
 user.email = "mushfiq@gmail.com";
-// Error: Property 'email' does not exist on type '{ ... }'.
+// ❌ Error: Property 'email' does not exist on type '{ ... }'.
 
 console.log(user2.address);
-// Error: Property 'address' does not exist on type 'IUser'.
+// ❌ Error: Property 'address' does not exist on type 'User'.
 ```
 
-**What we learn**
+TypeScript checks two things:
 
-TypeScript checks more than the type of existing properties — it also rejects
-properties that were never declared. This is called an **excess property check**.
+1. Every required field **is there**.
+2. Every field you use **was declared**.
 
-**Why it is important**
+This is called an **excess property check**. It catches typos and accidental
+fields.
 
-Typos like `usr.nmae` or accidental fields like `address` are caught
-immediately. This keeps objects consistent and prevents silent `undefined`
-values.
+```ts
+type User = { name: string; age: number };
 
-**Where to use it**
+const u: User = {
+  name: "Mushfiq",
+  age: 30,
+  email: "x@y.com", // ❌ email was not declared
+};
+```
 
-- Anywhere data crosses a boundary: API responses, form values, config files.
-- When you want to allow extra fields deliberately, add an index signature:
+### Two ways to fix it
+
+**Fix 1:** Remove the extra field.
+
+**Fix 2:** Add the field to the type.
+
+```ts
+type User = {
+  name: string;
+  age: number;
+  email: string;
+};
+```
+
+If you truly want to allow unknown extra fields, say so explicitly:
 
 ```ts
 interface User {
   name: string;
-  [key: string]: unknown; // explicitly allow extra properties
+  [key: string]: unknown; // allow extra properties
 }
 ```
 
+> Be careful with that last one — it turns off some of the protection you just
+> gained.
+
 ---
 
-## 11. Compile-time vs. runtime errors
+## 11. Two kinds of errors
+
+This distinction is important for beginners.
+
+### Compile-time errors
+
+These happen **before** the code runs. TypeScript finds them while checking
+your file.
 
 ```ts
-let x: number = "hello";
-// Compile error: Type 'string' is not assignable to type 'number'.
+let age: number = "thirty";
+// ❌ Compile-time error: text is not a number
 ```
 
-TypeScript errors happen **before** the code runs. Runtime errors (a failed
-network request, `undefined.map(...)`, etc.) still happen in JavaScript.
+### Runtime errors
 
-**Why it is important**
-
-TypeScript removes a large class of bugs — wrong types, missing properties,
-misspelled names, incorrect arguments — but it cannot guarantee that an API
-returns what you expect. Types describe what *should* happen; runtime
-validation proves what *did* happen.
-
-**Where to use it**
-
-- Use TypeScript for compile-time correctness.
-- Use runtime validation (e.g. Zod, Valibot, manual guards) at system
-  boundaries: user input, `fetch` responses, `localStorage`, environment
-  variables.
-
----
-
-## 12. Where TypeScript is used in the real world
-
-| Area | Typical use |
-| --- | --- |
-| Frontend | React, Vue, Angular, Svelte — typed props, state, and events. |
-| Backend | Node.js APIs, NestJS, Express, Fastify — typed requests and responses. |
-| Full-stack | Next.js, Remix, Nuxt — shared types between client and server. |
-| Libraries | SDKs and npm packages ship `.d.ts` files for consumers. |
-| Tooling | CLIs, build scripts, editor extensions, VS Code itself. |
-| Mobile / desktop | React Native, Expo, Electron, Tauri. |
-| Testing | Typed test fixtures and mocks. |
-
-The same four questions apply to every feature in this tutorial:
-
-1. **What is it?** — the syntax and semantics.
-2. **Why does it matter?** — the bug or ambiguity it removes.
-3. **Where do I use it?** — the boundaries and contracts in real code.
-4. **What is the trade-off?** — when it adds noise or false confidence.
-
----
-
-## 13. Common mistakes in this section (and fixes)
-
-These are worth studying because they are exactly the kinds of errors
-TypeScript is designed to catch.
-
-### 13.1 Missing return value
+These happen **while** the code runs, even if the types were correct.
 
 ```ts
-// Original: declares string, returns nothing
+async function showUser() {
+  const response = await fetch("/api/user");
+  const user = await response.json();
+  console.log(user.name.toUpperCase());
+  // ❌ Runtime error if the API returned no name
+}
+```
+
+TypeScript cannot know what the server will send. Types describe what
+**should** happen; they do not prove what **did** happen.
+
+### The practical rule
+
+| Place | What to use |
+| --- | --- |
+| Inside your own code | TypeScript types |
+| At the edges (user input, API, files, storage) | Runtime validation |
+
+Runtime validation means actually checking the data:
+
+```ts
+if (typeof user.name !== "string") {
+  throw new Error("Bad user data");
+}
+```
+
+Libraries like **Zod** and **Valibot** do this for you.
+
+---
+
+## 12. Where you will use TypeScript
+
+| Area | Example use |
+| --- | --- |
+| Frontend | React/Vue/Angular props, state, and events |
+| Backend | Node.js APIs, request and response bodies |
+| Full-stack | Sharing types between client and server (Next.js) |
+| Libraries | Shipping types so other developers get autocomplete |
+| Tools | CLIs, build scripts, editor extensions |
+| Mobile/desktop | React Native, Electron, Tauri |
+| Testing | Typed test data and mocks |
+
+In every area, TypeScript does the same three jobs:
+
+1. **Describes** what the data should look like.
+2. **Checks** that your code follows the description.
+3. **Documents** the code for other people (and future you).
+
+---
+
+## 13. How to read TypeScript errors
+
+Error messages look scary at first, but they follow patterns. Read them from
+left to right.
+
+### Pattern 1: wrong type
+
+```text
+Type 'string' is not assignable to type 'number'.
+```
+
+**Translation:** "You gave me text, but this place needs a number."
+
+### Pattern 2: wrong function argument
+
+```text
+Argument of type 'string' is not assignable to parameter of type 'number'.
+```
+
+**Translation:** "This function expects a number, and you passed text."
+
+### Pattern 3: missing property
+
+```text
+Property 'email' does not exist on type 'User'.
+```
+
+**Translation:** "You used a field that I was never told about."
+
+### Pattern 4: missing return
+
+```text
+A function whose declared type is neither 'undefined', 'void', nor 'any'
+must return a value.
+```
+
+**Translation:** "You promised to return something, but the function returns
+nothing."
+
+### Pattern 5: typo
+
+```text
+Cannot find name 'cosole'. Did you mean 'console'?
+```
+
+**Translation:** "I do not know this name. Did you spell it wrong?"
+
+### A simple routine when you see an error
+
+1. **Find the file and line** shown in the message.
+2. **Read the quoted type** — it tells you what was expected.
+3. **Read what you actually passed** — the message often includes it.
+4. **Fix the value or fix the type** — one of them is wrong.
+5. **Save and re-run** `npx tsc`.
+
+---
+
+## 14. Mistakes in our example, explained
+
+These are real mistakes in `code/src/script.ts`. Studying them is the fastest
+way to learn.
+
+### 14.1 A function that promises a value but returns nothing
+
+```ts
+// Original
 const greetings = (greetings: string = "Hello", fullname: string): string => {
   console.log(greetings + " " + fullname);
 };
-// Error: A function whose declared type is neither 'undefined', 'void',
-// nor 'any' must return a value.
+// ❌ Error: ... must return a value.
 ```
 
-**Fix** — return a value, or declare `void`:
+The function says it returns `string`, but it only logs. It never returns
+anything.
+
+**Fix:** return a value, or change the type to `void`.
 
 ```ts
-const greetings = (greeting = "Hello", fullname: string): void => {
+const greetings = (greeting: string = "Hello", fullname: string): void => {
   console.log(`${greeting} ${fullname}`);
 };
 ```
 
-### 13.2 Typo in a function body
+### 14.2 A typo in the function body
 
 ```ts
 action: () => cosole.log("Hello"),
-// Error: Cannot find name 'cosole'. Did you mean 'console'?
+// ❌ Error: Cannot find name 'cosole'. Did you mean 'console'?
 ```
 
-**Fix:** `console.log("Hello")`.
+**Fix:** write `console.log("Hello")`.
 
-### 13.3 Using a tuple mutator
+### 14.3 Trying to change a `readonly` tuple
 
 ```ts
 const dataLatLong: readonly [number, number] = [40.7128, -74.006];
 dataLatLong.push(100);
-// Error: Property 'push' does not exist on type 'readonly [number, number]'.
+// ❌ Error: Property 'push' does not exist on type 'readonly [number, number]'.
 ```
 
-**Fix:** remove `readonly` if mutation is intended, or create a new tuple with
-the same shape:
+**Fix:** remove `readonly` if you really need to change it, or create a new
+tuple:
 
 ```ts
-const moved: readonly [number, number] = [dataLatLong[0] + 0.01, dataLatLong[1]];
+const moved: readonly [number, number] = [
+  dataLatLong[0] + 0.01,
+  dataLatLong[1],
+];
 ```
 
-### 13.4 Mutating an object with an undeclared field
+### 14.4 Adding a field that was never declared
 
 ```ts
 user.email = "mushfiq@gmail.com";
-// Error: Property 'email' does not exist on the inline object type.
+// ❌ Error: Property 'email' does not exist ...
 ```
 
-**Fix:** add `email` to the type, or use an index signature if extra fields are
-intentional.
+**Fix:** add `email: string` to the type, or remove the line.
 
-### 13.5 Python tuple comment in a TypeScript file
+### 14.5 A Python comment inside a TypeScript file
 
-The comment block about Python tuples is not valid TypeScript documentation.
-In TypeScript:
+The comment block in `script.ts` talks about Python tuples. That description
+does not apply to TypeScript.
 
-- Arrays are `T[]` or `Array<T>`.
-- Tuples are `[T, U]`.
-- Tuples are **not** immutable by default; use `readonly` for that.
+Correct TypeScript facts:
+
+- A list is `T[]` or `Array<T>`.
+- A tuple is `[T, U]`.
+- Tuples are **not** immutable by default. Use `readonly` for that.
 
 ---
 
-## 14. Practice exercises
+## 15. Practice exercises
 
-Work in `code/src/script.ts`, run `npx tsc --watch`, and fix every error before
-running the output.
+Open `code/src/script.ts`, run `npx tsc --watch`, and fix every error before
+running the result. Start simple.
 
-### Exercise 1 — Typed primitives
+### Exercise 1 — Label some values
 
-Create variables for a product name, price, in-stock status, and a unique SKU
-using `string`, `number`, `boolean`, and `symbol`. Add a `bigint` for a large
-inventory count.
+Create variables for:
 
-### Exercise 2 — Typed function
+- a product name (`string`)
+- a price (`number`)
+- whether it is in stock (`boolean`)
+- a large inventory count (`bigint`)
 
-Write `calculateTotal(price: number, quantity: number): number` that returns
-the total. Then call it once correctly and once with a string to see the error.
+<details>
+<summary>Show one possible answer</summary>
 
-### Exercise 3 — Tuple
+```ts
+const productName: string = "Keyboard";
+const price: number = 49.99;
+const inStock: boolean = true;
+const inventory: bigint = 1200n;
+```
 
-Create a `readonly` tuple for a geographic coordinate. Try to change it and
-explain the error.
+</details>
+
+### Exercise 2 — A typed function
+
+Write `calculateTotal(price: number, quantity: number): number`.
+
+Call it correctly once. Then call it with a string and read the error.
+
+<details>
+<summary>Show answer</summary>
+
+```ts
+const calculateTotal = (price: number, quantity: number): number => {
+  return price * quantity;
+};
+
+calculateTotal(10, 3);      // 30
+calculateTotal("10", 3);    // ❌ Error: string is not a number
+```
+
+</details>
+
+### Exercise 3 — A fixed pair
+
+Create a `readonly` tuple for a coordinate. Try to change it, then explain the
+error in your own words.
+
+<details>
+<summary>Show answer</summary>
+
+```ts
+const point: readonly [number, number] = [23.8103, 90.4125];
+
+point[0] = 0;
+// ❌ Error: Cannot assign to '0' because it is a read-only property.
+```
+
+The `readonly` keyword means "look, but do not change."
+
+</details>
 
 ### Exercise 4 — Optional and rest parameters
 
-Write `formatName(first: string, last?: string): string` and
-`average(...values: number[]): number`. Handle the empty rest-argument case.
+Write:
 
-### Exercise 5 — Type alias and interface
+- `formatName(first: string, last?: string): string`
+- `average(...values: number[]): number`
 
-Define `type ProductId = string` and `interface Product` with `id`, `name`,
+Make `average()` return `0` when called with no numbers.
+
+<details>
+<summary>Show answer</summary>
+
+```ts
+const formatName = (first: string, last?: string): string => {
+  return last ? `${first} ${last}` : first;
+};
+
+const average = (...values: number[]): number => {
+  if (values.length === 0) return 0;
+  return values.reduce((sum, n) => sum + n, 0) / values.length;
+};
+```
+
+</details>
+
+### Exercise 5 — A product type
+
+Create `type ProductId = string` and an `interface Product` with `id`, `name`,
 `price`, and an optional `description`. Create one valid product.
 
-### Exercise 6 — Extend an interface
+<details>
+<summary>Show answer</summary>
 
-Create `interface DiscountedProduct extends Product` with a `discount: number`
-field. Write a function that returns the final price.
+```ts
+type ProductId = string;
 
-### Exercise 7 — Union type
+interface Product {
+  id: ProductId;
+  name: string;
+  price: number;
+  description?: string;
+}
+
+const product: Product = {
+  id: "p-1",
+  name: "Keyboard",
+  price: 49.99,
+};
+```
+
+</details>
+
+### Exercise 6 — Extending an interface
+
+Create `interface DiscountedProduct extends Product` with a `discount` number.
+Write a function that returns the final price.
+
+<details>
+<summary>Show answer</summary>
+
+```ts
+interface DiscountedProduct extends Product {
+  discount: number; // 0 to 1
+}
+
+const finalPrice = (product: DiscountedProduct): number => {
+  return product.price * (1 - product.discount);
+};
+```
+
+</details>
+
+### Exercise 7 — A union of exact values
 
 Create `type OrderStatus = "pending" | "paid" | "shipped" | "cancelled"` and a
 function that accepts only those values.
+
+<details>
+<summary>Show answer</summary>
+
+```ts
+type OrderStatus = "pending" | "paid" | "shipped" | "cancelled";
+
+const describeStatus = (status: OrderStatus): string => {
+  return `Order is ${status}`;
+};
+
+describeStatus("paid");      // ✅
+describeStatus("delivered"); // ❌ not one of the allowed values
+```
+
+</details>
 
 ### Exercise 8 — Spot the bug
 
 ```ts
 type User = { name: string; age: number };
-const u: User = { name: "Mushfiq", age: 30, email: "x@y.com" };
+
+const u: User = {
+  name: "Mushfiq",
+  age: 30,
+  email: "x@y.com",
+};
 ```
 
-What error do you get, and what are the two possible fixes?
+What error do you get? What are the two possible fixes?
 
 <details>
-<summary>Exercise 8 answer</summary>
+<summary>Show answer</summary>
 
-You get an excess property error: `'email' does not exist in type 'User'`.
+The error is an **excess property check**: `'email' does not exist in type
+'User'`.
 
 Fix 1: remove `email` from the object.
 
@@ -714,93 +1083,125 @@ extra fields are allowed).
 
 ---
 
-## 15. Cheat sheet
+## 16. Cheat sheet
+
+### Variables
 
 ```ts
-// Primitives
-let s: string = "text";
-let n: number = 42;
-let b: boolean = true;
-let sym: symbol = Symbol("id");
-let big: bigint = 9007199254740991n;
+let text: string = "hello";
+let count: number = 42;
+let isOn: boolean = true;
+let big: bigint = 100n;
+let unique: symbol = Symbol("id");
 let nothing: null = null;
 let missing: undefined = undefined;
-
-// Arrays and tuples
-let list: string[] = ["a", "b"];
-let list2: Array<number> = [1, 2, 3];
-let pair: [number, number] = [1, 2];
-let fixed: readonly [number, number] = [1, 2];
-
-// Functions
-const add = (a: number, b: number): number => a + b;
-const optional = (a: string, b?: string): string => a + (b ?? "");
-const withDefault = (a: string = "hi"): void => console.log(a);
-const rest = (...nums: number[]): number => nums.reduce((x, y) => x + y, 0);
-
-// Objects
-type User = { name: string; age: number };
-interface Account { id: string; active: boolean }
-
-// Union and intersection
-type Status = "idle" | "loading" | "error";
-type Admin = User & { role: "admin" };
-
-// Optional property
-interface Config { timeout?: number }
-
-// Function property
-interface Handler { onClick: (event: MouseEvent) => void }
-
-// Readonly property
-interface Point { readonly x: number; readonly y: number }
-
-// Generic function
-const first = <T>(items: T[]): T | undefined => items[0];
 ```
 
-| Concept | Syntax |
+### Arrays and tuples
+
+```ts
+let names: string[] = ["a", "b"];
+let numbers: Array<number> = [1, 2, 3];
+let pair: [number, number] = [1, 2];
+let locked: readonly [number, number] = [1, 2];
+```
+
+### Functions
+
+```ts
+const add = (a: number, b: number): number => a + b;
+const maybe = (a: string, b?: string): string => a + (b ?? "");
+const withDefault = (a = "hi"): void => console.log(a);
+const sum = (...nums: number[]): number => nums.reduce((x, y) => x + y, 0);
+```
+
+### Objects
+
+```ts
+type User = { name: string; age: number };
+interface Account { id: string; active: boolean }
+interface Config { timeout?: number }
+interface Point { readonly x: number; readonly y: number }
+```
+
+### Unions and combinations
+
+```ts
+type Status = "idle" | "loading" | "error";
+type Admin = User & { role: "admin" };
+```
+
+### Quick reference
+
+| I want to... | Write |
 | --- | --- |
-| Type annotation | `const x: number = 1` |
-| Optional parameter | `(name?: string)` |
-| Default parameter | `(name = "guest")` |
-| Rest parameter | `(...nums: number[])` |
-| Array | `string[]` / `Array<string>` |
-| Tuple | `[string, number]` |
-| Readonly tuple | `readonly [number, number]` |
-| Union | `"a" \| "b"` |
-| Intersection | `A & B` |
-| Type alias | `type Id = string` |
-| Interface | `interface User { name: string }` |
-| Function type | `(a: number) => string` |
-| Generic | `<T>(value: T) => T` |
+| Label a value | `const x: number = 1` |
+| Make a parameter optional | `(name?: string)` |
+| Give a default | `(name = "guest")` |
+| Accept many values | `(...nums: number[])` |
+| Make a list | `string[]` |
+| Make a fixed pair | `[string, number]` |
+| Prevent changes | `readonly` |
+| Allow one of several values | `"a" \| "b"` |
+| Name a type | `type Id = string` |
+| Describe an object | `interface User { name: string }` |
+| Describe a function | `(a: number) => string` |
+| Reuse a type | `<T>(value: T) => T` |
 
 ---
 
-## 16. Next steps
+## 17. Beginner glossary
+
+| Word | Plain meaning |
+| --- | --- |
+| **Type** | A label that says what kind of value something is. |
+| **Annotation** | Writing the type yourself: `: number`. |
+| **Inference** | TypeScript guessing the type for you. |
+| **Compile** | Check the code and turn `.ts` into `.js`. |
+| **Compiler** | The tool that does the compiling (`tsc`). |
+| **Runtime** | The moment the program is actually running. |
+| **Compile-time** | Before the program runs, while checking. |
+| **Parameter** | A named input in a function definition. |
+| **Argument** | The actual value you pass to a function. |
+| **Return type** | The type of value a function gives back. |
+| **`void`** | "This function returns nothing." |
+| **`any`** | "Turn checking off." Avoid it. |
+| **`unknown`** | "I do not know the type yet; check before using." |
+| **Union** | One of several types: `string \| number`. |
+| **Intersection** | All of several types at once: `A & B`. |
+| **Generic** | A type that works with many types: `<T>`. |
+| **Tuple** | A fixed-length, position-typed array. |
+| **`readonly`** | "Do not allow changes." |
+| **Interface** | A named blueprint for an object. |
+| **Type alias** | A nickname for any type. |
+| **Excess property** | A field that was not declared in the type. |
+
+---
+
+## 18. Next steps
 
 After this section you should be comfortable with:
 
-- [x] Primitive types and when to annotate vs. infer.
-- [x] Typed function parameters and return values.
+- [x] Primitive types and when to label vs. let TypeScript guess.
+- [x] Typed function inputs and outputs.
 - [x] Arrays, tuples, and `readonly`.
 - [x] Optional, default, and rest parameters.
 - [x] Object types, `type` aliases, and `interface`.
-- [x] Excess property checks and compile-time safety.
+- [x] Reading common TypeScript errors.
 
-Continue with:
+Continue with these topics, in this order:
 
-1. **Narrowing** — `typeof`, `in`, discriminated unions, type guards.
-2. **Generics** — reusable, type-safe functions and components.
+1. **Narrowing** — using `typeof`, `in`, and type guards to narrow a type.
+2. **Generics** — writing functions that work with many types safely.
 3. **Utility types** — `Partial`, `Pick`, `Omit`, `Record`, `ReturnType`.
-4. **Runtime validation** — Zod or Valibot at API boundaries.
-5. **Project integration** — use TypeScript with React or Node and a bundler.
+4. **Runtime validation** — checking API data with Zod or Valibot.
+5. **Framework integration** — TypeScript with React or Node.
 
 ---
 
 ## Resources
 
 - [TypeScript Handbook](https://www.typescriptlang.org/docs/handbook/intro.html)
-- [TypeScript Playground](https://www.typescriptlang.org/play)
+- [TypeScript Playground](https://www.typescriptlang.org/play) — try code without installing anything
 - [tsconfig reference](https://www.typescriptlang.org/tsconfig)
 - Source example: [`code/src/script.ts`](./code/src/script.ts)
