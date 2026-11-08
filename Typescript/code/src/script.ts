@@ -26,6 +26,7 @@ Example:
 mytuple = ("apple", "banana", "cherry")
 print(mytuple)  */
 
+//optional parameter 
 const concatNames = (firstName: string, lastName?: string) => {
     if(!lastName) {
         return firstName
@@ -42,3 +43,65 @@ console.log(concatNames("Mushfiq")) // Output: Mushfiq
 console.log(concatNames("Mushfiq", "Azam")) // Output: Mushfiq Azam
 console.log(greetings("Hi", "Mushfiq")) // Output: Hi Mushfiq
 console.log(greetings(undefined, "Mushfiq")) // Output: Hello Mushfiq
+
+//Rest parameter
+const sumNumbers = (...numbers: number[]): number => {
+    return numbers.reduce((acc, curr) => acc + curr, 0)
+};
+
+sumNumbers(1, 2, 3, 4, 5) // Output: 15
+
+const longUserAction=(...args: [name :string, age: number, isActive: boolean])=>{
+    const [name, age, isActive] = args;
+    console.log(name +"is" + age);
+}
+
+longUserAction("Mushfiq", 30, true) // Output: Mushfiq is 30
+
+
+// object type ,type alias and interface
+
+type TUser = {
+    name: string,
+    age: number,
+    isActive: boolean,
+    action:() => void,
+    badges: string[]
+}
+
+interface IUser {
+    name: string,
+    age: number,
+    isActive: boolean,
+    action:() => void,
+    badges: string[]
+}
+//when to use type alias and interface
+//Use type alias when you want to create a new name for a type, especially for primitive types or union types.
+//Use interface when you want to define the shape of an object, especially when you want to use inheritance or implement multiple interfaces.
+const user : {
+    name: string,
+    age: number,
+    isActive: boolean
+    action:() => void
+    badges: string[]
+}= {
+    name : "Mushfiq" ,
+    age : 30,
+    isActive : true,
+    action: () => cosole.log("Hello"),
+    badges: ["admin", "editor"]
+};
+
+type Username =string;
+
+
+const user2: IUser = {
+    name: "Azam",
+    age: 25,
+    isActive: false,
+    action: () => console.log("Hi"),
+    badges: ["user"]
+};
+user.email="mushfiq@GMAIL.COM" // This will throw an error because email is not defined in the User type
+console.log(user2.address) // This will throw an error because address is not defined in the User type
